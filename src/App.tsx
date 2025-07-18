@@ -189,5 +189,11 @@ function App() {
     </div>
   );
 }
+import { updateUserProfile } from "../hooks/useFirebaseUsers";
+
+const handleUpdateProfile = async (data) => {
+  if (!user?.uid) return;
+  await updateUserProfile(user.uid, data);
+};
 
 export default App;
