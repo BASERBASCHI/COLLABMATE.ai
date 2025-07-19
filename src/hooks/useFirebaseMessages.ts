@@ -99,11 +99,11 @@ export const useFirebaseMessages = (userId: string | null, partnerId: string | n
         try {
           // Get partner's name for context
           const partnerDoc = await getDoc(doc(db, COLLECTIONS.USERS, partnerId));
-          const partnerName = partnerDoc.exists() ? partnerDoc.data().displayName : 'your teammate';
+          const partnerName = partnerDoc.exists() ? (partnerDoc.data().displayName || 'your teammate') : 'your teammate';
           
           // Get current user's name
           const currentUserDoc = await getDoc(doc(db, COLLECTIONS.USERS, userId));
-          const currentUserName = currentUserDoc.exists() ? currentUserDoc.data().displayName : 'User';
+          const currentUserName = currentUserDoc.exists() ? (currentUserDoc.data().displayName || 'User') : 'User';
           
           // Generate AI suggestion using Gemini
           const aiSuggestion = await generateChatSuggestion(
@@ -134,7 +134,6 @@ export const useFirebaseMessages = (userId: string | null, partnerId: string | n
       }, 2000);
     } catch (error) {
       console.error('Error sending message:', error);
-      alert('Failed to send message');
     }
   };
 

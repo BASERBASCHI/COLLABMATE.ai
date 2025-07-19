@@ -98,16 +98,22 @@ function App() {
   };
 
   const handleUpdateProfile = async (updates: any) => {
-    if (user) {
-      try {
-        console.log('Attempting to update profile with:', updates);
-        await updateUserProfile(updates);
+    if (!user) {
+      alert('❌ No user found. Please log in again.');
+      return;
+    }
+
+    try {
+      const result = await updateUserProfile(updates);
+      if (result?.success) {
         alert('✅ Profile updated successfully! Your profile strength is now higher.');
         setShowProfileCompletion(false);
-      } catch (error) {
-        console.error('Error updating profile:', error);
-        alert(`❌ Failed to update profile: ${error.message || 'Unknown error'}. Please try again.`);
+      } else {
+        alert(`❌ Failed to update profile: ${result?.error || 'Unknown error'}. Please try again.`);
       }
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      alert(`❌ Failed to update profile: ${error.message || 'Unknown error'}. Please try again.`);
     }
   };
 

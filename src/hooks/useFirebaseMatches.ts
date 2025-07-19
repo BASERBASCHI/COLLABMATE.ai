@@ -105,6 +105,13 @@ export const useFirebaseMatches = (userId: string | null) => {
     if (!userId) return;
 
     try {
+      // Clear existing matches first
+      const existingMatchesQuery = query(
+        collection(db, COLLECTIONS.MATCHES),
+        where('userId', '==', userId)
+      );
+      const existingSnapshot = await getDocs(existingMatchesQuery);
+      
       // Get current user's profile
       const currentUserDoc = await getDoc(doc(db, COLLECTIONS.USERS, userId));
       if (!currentUserDoc.exists()) return;
@@ -113,6 +120,11 @@ export const useFirebaseMatches = (userId: string | null) => {
 
       // Get other users to match with
       const otherUsers = allUsers.filter(user => user.id !== userId);
+      
+      if (otherUsers.length === 0) {
+        console.log('No other users found for matching');
+        return;
+      }
 
       // Generate matches based on common skills, interests, and location
       const newMatches = otherUsers.map(otherUser => {

@@ -69,9 +69,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
   };
 
   const handleRefresh = async () => {
-    onRefresh();
-    await generateMatches();
-    await generateAIProjectSuggestions();
+    try {
+      onRefresh();
+      await generateMatches();
+      await generateAIProjectSuggestions();
+    } catch (error) {
+      console.error('Error refreshing dashboard:', error);
+    }
   };
 
   return (

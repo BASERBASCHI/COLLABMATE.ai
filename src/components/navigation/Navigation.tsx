@@ -13,8 +13,15 @@ export const Navigation: React.FC<NavigationProps> = ({ user, onLogout }) => {
   };
 
   const handleProfileClick = () => {
+    // Remove any existing dropdown first
+    const existingDropdown = document.querySelector('.profile-dropdown');
+    if (existingDropdown) {
+      existingDropdown.remove();
+      return;
+    }
+    
     const dropdown = document.createElement('div');
-    dropdown.className = 'absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50';
+    dropdown.className = 'profile-dropdown absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50';
     dropdown.innerHTML = `
       <button class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left" onclick="alert('Profile settings would open here')">Profile Settings</button>
       <button class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left" onclick="alert('Account preferences would open here')">Preferences</button>

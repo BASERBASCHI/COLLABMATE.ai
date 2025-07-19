@@ -264,7 +264,6 @@ export const useFirebaseAuth = () => {
       if (updates.profileStrength !== undefined) cleanUpdates.profileStrength = updates.profileStrength;
       if (updates.isProfileComplete !== undefined) cleanUpdates.isProfileComplete = updates.isProfileComplete;
       
-      console.log('Updating profile with:', cleanUpdates);
       await updateDoc(userDocRef, cleanUpdates);
       
       // Refresh user profile
@@ -272,9 +271,11 @@ export const useFirebaseAuth = () => {
       if (currentUser) {
         await fetchUserProfile(currentUser);
       }
+      
+      return { success: true };
     } catch (error) {
       console.error('Error updating profile:', error);
-      throw error; // Re-throw to handle in calling function
+      return { success: false, error: error.message };
     }
   };
 

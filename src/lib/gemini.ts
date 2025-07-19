@@ -2,8 +2,6 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
-console.log('Gemini API Key status:', API_KEY ? 'Found' : 'Not found');
-
 const genAI = API_KEY ? new GoogleGenerativeAI(API_KEY) : null;
 
 export const generateChatSuggestion = async (
