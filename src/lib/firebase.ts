@@ -68,6 +68,11 @@ export interface FirebaseUser {
   codingHours: string;
   collaborationStyle: string;
   projectPace: string;
+  workStyle: string[];
+  personalityTags: string[];
+  codingHours: string;
+  collaborationStyle: string;
+  projectPace: string;
   profileStrength: number;
   createdAt: any;
   updatedAt: any;

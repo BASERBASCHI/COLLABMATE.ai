@@ -164,6 +164,12 @@ export const useFirebaseAuth = () => {
         communicationStyle: '',
         hackathonPreference: '',
         remoteWork: true,
+        workStyle: [],
+        personalityTags: [],
+        codingHours: '',
+        collaborationStyle: '',
+        projectPace: '',
+        maxDistance: 50,
         profileStrength: 20,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
@@ -226,22 +232,40 @@ export const useFirebaseAuth = () => {
     try {
       const userDocRef = doc(db, COLLECTIONS.USERS, user.id);
       
-      // Clean up the updates object to only include valid Firestore fields
-      const cleanUpdates = {
-        ...updates,
-        updatedAt: serverTimestamp()
+      // Prepare updates with proper field mapping
+      const cleanUpdates: any = {
+        updatedAt: serverTimestamp(),
+        lastActive: serverTimestamp()
       };
+
+      // Map the updates to the correct Firestore field names
+      if (updates.displayName !== undefined) cleanUpdates.displayName = updates.displayName;
+      if (updates.title !== undefined) cleanUpdates.title = updates.title;
+      if (updates.bio !== undefined) cleanUpdates.bio = updates.bio;
+      if (updates.skills !== undefined) cleanUpdates.skills = updates.skills;
+      if (updates.interests !== undefined) cleanUpdates.interests = updates.interests;
+      if (updates.experience !== undefined) cleanUpdates.experience = updates.experience;
+      if (updates.github !== undefined) cleanUpdates.github = updates.github;
+      if (updates.linkedin !== undefined) cleanUpdates.linkedin = updates.linkedin;
+      if (updates.portfolio !== undefined) cleanUpdates.portfolio = updates.portfolio;
+      if (updates.location !== undefined) cleanUpdates.location = updates.location;
+      if (updates.availability !== undefined) cleanUpdates.availability = updates.availability;
+      if (updates.timezone !== undefined) cleanUpdates.timezone = updates.timezone;
+      if (updates.preferredRoles !== undefined) cleanUpdates.preferredRoles = updates.preferredRoles;
+      if (updates.communicationStyle !== undefined) cleanUpdates.communicationStyle = updates.communicationStyle;
+      if (updates.hackathonPreference !== undefined) cleanUpdates.hackathonPreference = updates.hackathonPreference;
+      if (updates.remoteWork !== undefined) cleanUpdates.remoteWork = updates.remoteWork;
+      if (updates.maxDistance !== undefined) cleanUpdates.maxDistance = updates.maxDistance;
+      if (updates.workStyle !== undefined) cleanUpdates.workStyle = updates.workStyle;
+      if (updates.personalityTags !== undefined) cleanUpdates.personalityTags = updates.personalityTags;
+      if (updates.codingHours !== undefined) cleanUpdates.codingHours = updates.codingHours;
+      if (updates.collaborationStyle !== undefined) cleanUpdates.collaborationStyle = updates.collaborationStyle;
+      if (updates.projectPace !== undefined) cleanUpdates.projectPace = updates.projectPace;
+      if (updates.profileStrength !== undefined) cleanUpdates.profileStrength = updates.profileStrength;
+      if (updates.isProfileComplete !== undefined) cleanUpdates.isProfileComplete = updates.isProfileComplete;
       
-      // Remove any undefined values
-      Object.keys(cleanUpdates).forEach(key => {
-        if (cleanUpdates[key] === undefined) {
-          delete cleanUpdates[key];
-        }
-      });
-      
-      await updateDoc(userDocRef, {
-        ...cleanUpdates
-      });
+      console.log('Updating profile with:', cleanUpdates);
+      await updateDoc(userDocRef, cleanUpdates);
       
       // Refresh user profile
       const currentUser = auth.currentUser;

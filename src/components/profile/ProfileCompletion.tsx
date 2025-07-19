@@ -163,7 +163,7 @@ export const ProfileCompletion: React.FC<ProfileCompletionProps> = ({
     }
 
     const updates = {
-      displayName: formData.title ? `${user.name}` : user.name,
+      displayName: user.name, // Keep the existing name
       title: formData.title,
       bio: formData.bio,
       skills: formData.skills,
@@ -192,8 +192,8 @@ export const ProfileCompletion: React.FC<ProfileCompletionProps> = ({
       isProfileComplete: isComplete
     };
 
+    console.log('Profile completion submitting:', updates);
     await onUpdateProfile(updates);
-    onClose();
   };
 
   const renderStep1 = () => (

@@ -36,7 +36,7 @@ function App() {
 
   // Show profile completion modal for incomplete profiles
   React.useEffect(() => {
-    if (user && !user.isProfileComplete && user.profileStrength < 60) {
+    if (user && (!user.isProfileComplete || user.profileStrength < 60)) {
       setShowProfileCompletion(true);
     }
   }, [user]);
@@ -100,13 +100,14 @@ function App() {
   const handleUpdateProfile = async (updates: any) => {
     if (user) {
       try {
+        console.log('Attempting to update profile with:', updates);
         await updateUserProfile(updates);
-        alert('✅ Profile updated successfully!');
+        alert('✅ Profile updated successfully! Your profile strength is now higher.');
+        setShowProfileCompletion(false);
       } catch (error) {
         console.error('Error updating profile:', error);
-        alert('❌ Failed to update profile. Please try again.');
+        alert(`❌ Failed to update profile: ${error.message || 'Unknown error'}. Please try again.`);
       }
-      setShowProfileCompletion(false);
     }
   };
 
