@@ -225,9 +225,22 @@ export const useFirebaseAuth = () => {
 
     try {
       const userDocRef = doc(db, COLLECTIONS.USERS, user.id);
-      await updateDoc(userDocRef, {
+      
+      // Clean up the updates object to only include valid Firestore fields
+      const cleanUpdates = {
         ...updates,
         updatedAt: serverTimestamp()
+      };
+      
+      // Remove any undefined values
+      Object.keys(cleanUpdates).forEach(key => {
+        if (cleanUpdates[key] === undefined) {
+          delete cleanUpdates[key];
+        }
+      });
+      
+      await updateDoc(userDocRef, {
+        ...cleanUpdates
       });
       
       // Refresh user profile
@@ -237,6 +250,7 @@ export const useFirebaseAuth = () => {
       }
     } catch (error) {
       console.error('Error updating profile:', error);
+      throw error; // Re-throw to handle in calling function
     }
   };
 

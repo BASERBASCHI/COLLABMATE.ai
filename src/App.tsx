@@ -99,7 +99,13 @@ function App() {
 
   const handleUpdateProfile = async (updates: any) => {
     if (user) {
-      await updateUserProfile(updates);
+      try {
+        await updateUserProfile(updates);
+        alert('✅ Profile updated successfully!');
+      } catch (error) {
+        console.error('Error updating profile:', error);
+        alert('❌ Failed to update profile. Please try again.');
+      }
       setShowProfileCompletion(false);
     }
   };

@@ -163,6 +163,7 @@ export const ProfileCompletion: React.FC<ProfileCompletionProps> = ({
     }
 
     const updates = {
+      displayName: formData.title ? `${user.name}` : user.name,
       title: formData.title,
       bio: formData.bio,
       skills: formData.skills,
@@ -191,14 +192,8 @@ export const ProfileCompletion: React.FC<ProfileCompletionProps> = ({
       isProfileComplete: isComplete
     };
 
-    try {
-      await onUpdateProfile(updates);
-      alert(`✅ Profile Updated Successfully!\n\nProfile Strength: ${profileStrength}%\n${isComplete ? 'Your profile is now complete!' : 'Keep adding more details to reach 100%!'}`);
-      onClose();
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      alert('❌ Failed to update profile. Please try again.');
-    }
+    await onUpdateProfile(updates);
+    onClose();
   };
 
   const renderStep1 = () => (
