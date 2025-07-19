@@ -51,8 +51,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </p>
               <button
                 onClick={() => {
-                  // This would trigger profile completion modal
-                  alert('Profile completion modal would open here');
+                  window.location.reload(); // Simple way to trigger profile completion check
                 }}
                 className="text-xs bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded transition-colors"
               >

@@ -124,14 +124,6 @@ function App() {
           onSignup={signup}
           onShowLogin={handleShowLogin}
         />
-        
-        {user && showProfileCompletion && (
-          <ProfileCompletion
-            user={user}
-            onUpdateProfile={handleUpdateProfile}
-            onClose={() => setShowProfileCompletion(false)}
-          />
-        )}
       </div>
     );
   }

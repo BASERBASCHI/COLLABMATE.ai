@@ -191,8 +191,14 @@ export const ProfileCompletion: React.FC<ProfileCompletionProps> = ({
       isProfileComplete: isComplete
     };
 
-    await onUpdateProfile(updates);
-    onClose();
+    try {
+      await onUpdateProfile(updates);
+      alert(`✅ Profile Updated Successfully!\n\nProfile Strength: ${profileStrength}%\n${isComplete ? 'Your profile is now complete!' : 'Keep adding more details to reach 100%!'}`);
+      onClose();
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      alert('❌ Failed to update profile. Please try again.');
+    }
   };
 
   const renderStep1 = () => (
