@@ -7,7 +7,8 @@ import {
   onAuthStateChanged,
   updateProfile,
   GoogleAuthProvider,
-  signInWithPopup
+  signInWithPopup,
+  getRedirectResult
 } from 'firebase/auth';
 import { 
   doc, 
@@ -30,6 +31,21 @@ export const useFirebaseAuth = () => {
   const [showSignupModal, setShowSignupModal] = useState(false);
 
   useEffect(() => {
+    // Handle redirect result from Google login
+    const handleRedirectResult = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result) {
+          // User signed in via redirect
+          console.log('Google login via redirect successful');
+        }
+      } catch (error) {
+        console.error('Redirect result error:', error);
+      }
+    };
+
+    handleRedirectResult();
+
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         await fetchUserProfile(firebaseUser);
@@ -195,11 +211,21 @@ export const useFirebaseAuth = () => {
   const loginWithGoogle = async () => {
     try {
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+      try {
+        await signInWithPopup(auth, provider);
+      } catch (popupError: any) {
+        if (popupError.code === 'auth/popup-blocked') {
+          // Fallback to redirect method when popup is blocked
+          const { signInWithRedirect } = await import('firebase/auth');
+          await signInWithRedirect(auth, provider);
+          return;
+        }
+        throw popupError;
+      }
     } catch (error: any) {
       console.error('Google login error:', error);
       if (error.code === 'auth/popup-blocked') {
-        alert('Pop-up blocked! Please allow pop-ups for this site in your browser settings and try again. Look for a pop-up blocker icon in your address bar.');
+        alert('Pop-up blocked! Redirecting to Google login page...');
       } else {
         alert(`Google login failed: ${error.message}`);
       }
