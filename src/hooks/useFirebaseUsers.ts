@@ -65,7 +65,7 @@ export const useFirebaseUsers = (currentUserId?: string) => {
           name: userData.displayName || 'Anonymous User',
           email: userData.email,
           title: userData.title || 'Developer',
-          avatar: userData.photoURL || `https://images.pexels.com/photos/${Math.floor(Math.random() * 1000) + 1000}/pexels-photo-${Math.floor(Math.random() * 1000) + 1000}.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1`,
+          avatar: userData.photoURL || generateRealisticAvatar(userData.displayName || 'User', userData.email),
           skills: userData.skills || [],
           interests: userData.interests || [],
           experience: userData.experience || 'Beginner',
@@ -81,9 +81,14 @@ export const useFirebaseUsers = (currentUserId?: string) => {
             communication: userData.communicationStyle || 'Slack',
             hackathonPreference: userData.hackathonPreference || 'Virtual',
             remoteWork: userData.remoteWork || true,
-            maxDistance: userData.maxDistance
+            maxDistance: userData.maxDistance,
+            workStyle: userData.workStyle || [],
+            personalityTags: userData.personalityTags || [],
+            codingHours: userData.codingHours || '',
+            collaborationStyle: userData.collaborationStyle || '',
+            projectPace: userData.projectPace || ''
           },
-          profileStrength: userData.profileStrength || 20,
+          profileStrength: userData.profileStrength || 75,
           about: userData.bio || '',
           projects: [], // Will be fetched separately if needed
           createdAt: userData.createdAt ? new Date(userData.createdAt.toDate()).toISOString() : new Date().toISOString(),
@@ -163,6 +168,27 @@ export const useFirebaseUsers = (currentUserId?: string) => {
   };
 };
 
+// Generate realistic avatars based on user info
+const generateRealisticAvatar = (name: string, email: string): string => {
+  const avatars = [
+    'https://images.pexels.com/photos/1040881/pexels-photo-1040881.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1',
+    'https://images.pexels.com/photos/1181424/pexels-photo-1181424.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1',
+    'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1',
+    'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1',
+    'https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1',
+    'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1',
+    'https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1',
+    'https://images.pexels.com/photos/1300402/pexels-photo-1300402.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1'
+  ];
+  
+  // Use email hash to consistently assign same avatar to same user
+  const hash = email.split('').reduce((a, b) => {
+    a = ((a << 5) - a) + b.charCodeAt(0);
+    return a & a;
+  }, 0);
+  
+  return avatars[Math.abs(hash) % avatars.length];
+};
 // Helper function to calculate distance between two coordinates
 const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
   const R = 6371; // Radius of the Earth in kilometers

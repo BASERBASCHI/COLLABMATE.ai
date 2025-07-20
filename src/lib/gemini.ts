@@ -160,3 +160,75 @@ Respond in this exact JSON format:
     }
   }
 };
+
+export const generateGeminiResponse = async (
+  question: string,
+  context?: string
+): Promise<string> => {
+  if (!genAI) {
+    // Fallback responses for common questions
+    const fallbackResponses: { [key: string]: string } = {
+      'teammate': "When looking for teammates, focus on complementary skills rather than identical ones. Look for people who share your passion for the project but bring different expertise. Good communication and similar work schedules are also crucial for successful collaboration.",
+      'project': "Great projects solve real problems and use technologies you're excited to learn. Start with something achievable in 2-4 weeks, ensure it showcases your skills, and consider what would be valuable for your portfolio. Don't be afraid to put your own spin on existing ideas!",
+      'collaboration': "Effective collaboration requires clear communication, defined roles, and regular check-ins. Use tools like Slack for daily communication, GitHub for code collaboration, and project management tools like Trello or Notion to track progress.",
+      'timeline': "Break your project into weekly milestones. Week 1: Planning and setup, Week 2-3: Core development, Week 4: Testing and polish. Always add buffer time for unexpected challenges, and communicate early if you're falling behind schedule."
+    };
+    
+    const questionLower = question.toLowerCase();
+    for (const [key, response] of Object.entries(fallbackResponses)) {
+      if (questionLower.includes(key)) {
+        return response;
+      }
+    }
+    
+    return "That's a great question! While I'm having trouble connecting to my full knowledge base right now, I'd recommend discussing this with your teammates or checking out resources like GitHub, Stack Overflow, or developer communities for detailed guidance.";
+  }
+
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+    const prompt = `
+You are Gemini AI, an intelligent assistant for CollabMate - a platform that helps developers and students find teammates and collaborate on projects.
+
+User Question: "${question}"
+${context ? `Context: ${context}` : ''}
+
+Provide a helpful, actionable response that:
+- Is specific to collaboration, teamwork, and project development
+- Offers practical advice and next steps
+- Is encouraging and supportive
+- Is concise but comprehensive (2-4 sentences)
+- Relates to the CollabMate platform when relevant
+
+Focus on topics like:
+- Finding and working with teammates
+- Project planning and management
+- Technical collaboration best practices
+- Communication and workflow optimization
+- Skill development and learning
+- Career advice for developers/students
+
+Respond in a friendly, professional tone as if you're a knowledgeable mentor.
+    `;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text().trim();
+
+    return text || "I'd be happy to help! Could you provide a bit more detail about what specific aspect you'd like guidance on?";
+  } catch (error) {
+    console.error('Error generating Gemini response:', error);
+    
+    // Contextual fallback based on question content
+    const questionLower = question.toLowerCase();
+    if (questionLower.includes('team') || questionLower.includes('collaborate')) {
+      return "Successful collaboration starts with clear communication and shared goals. Make sure everyone understands their role, set up regular check-ins, and use collaborative tools like GitHub for code sharing and Slack for communication.";
+    } else if (questionLower.includes('project') || questionLower.includes('idea')) {
+      return "Great projects solve real problems and showcase your skills. Start with something achievable, consider your target audience, and don't be afraid to iterate on your initial idea based on feedback from potential users.";
+    } else if (questionLower.includes('skill') || questionLower.includes('learn')) {
+      return "Focus on building projects that stretch your current skills while being achievable. Pair programming with teammates is a great way to learn, and don't hesitate to ask questions - the development community is generally very helpful!";
+    } else {
+      return "That's an interesting question! For the best guidance, I'd recommend discussing this with experienced developers in your network or checking out resources like developer communities, documentation, and tutorials specific to your technology stack.";
+    }
+  }
+};

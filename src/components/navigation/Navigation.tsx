@@ -1,13 +1,14 @@
 import React from 'react';
-import { Bell, Menu } from 'lucide-react';
+import { Bell, Menu, Sparkles } from 'lucide-react';
 import { User } from '../../types';
 
 interface NavigationProps {
   user: User;
   onLogout: () => void;
+  onAskGemini: () => void;
 }
 
-export const Navigation: React.FC<NavigationProps> = ({ user, onLogout }) => {
+export const Navigation: React.FC<NavigationProps> = ({ user, onLogout, onAskGemini }) => {
   const handleNotificationsClick = () => {
     alert('🔔 Notifications\n\n• Alex Chen viewed your profile (1 hour ago)\n• Maya Patel sent you a message (3 hours ago)\n• New hackathon match available (5 hours ago)');
   };
@@ -62,6 +63,14 @@ export const Navigation: React.FC<NavigationProps> = ({ user, onLogout }) => {
         </div>
         
         <div className="flex items-center space-x-4">
+          <button 
+            onClick={onAskGemini}
+            className="flex items-center space-x-2 bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-2 rounded-lg transition-colors"
+          >
+            <Sparkles className="h-5 w-5" />
+            <span className="hidden md:inline">Ask Gemini</span>
+          </button>
+          
           <button 
             onClick={handleNotificationsClick}
             className="relative p-2 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors"

@@ -163,30 +163,46 @@ export const useFirebaseAuth = () => {
 
   const createInitialProfile = async (firebaseUser: FirebaseAuthUser) => {
     try {
+      // Generate realistic initial data based on user's email domain
+      const emailDomain = firebaseUser.email?.split('@')[1] || '';
+      const isStudent = emailDomain.includes('edu') || emailDomain.includes('student');
+      const isGoogleUser = firebaseUser.providerData.some(p => p.providerId === 'google.com');
+      
+      // Generate realistic skills based on common patterns
+      const commonSkills = isStudent 
+        ? ['JavaScript', 'Python', 'HTML/CSS', 'React']
+        : ['JavaScript', 'TypeScript', 'Node.js', 'React', 'Git'];
+      
+      const commonInterests = isStudent
+        ? ['Web Development', 'Mobile Apps', 'AI/ML', 'Game Development']
+        : ['Full Stack Development', 'Cloud Computing', 'DevOps', 'API Development'];
+
       const initialProfile: FirebaseUser = {
         uid: firebaseUser.uid,
         email: firebaseUser.email || '',
         displayName: firebaseUser.displayName || 'New User',
         photoURL: firebaseUser.photoURL,
-        title: 'New User',
-        bio: '',
-        skills: [],
-        interests: [],
-        experience: 'Beginner',
+        title: isStudent ? 'Computer Science Student' : 'Software Developer',
+        bio: isStudent 
+          ? 'Passionate computer science student looking to collaborate on exciting projects and learn from experienced developers.'
+          : 'Experienced developer interested in collaborating on innovative projects and mentoring others.',
+        skills: commonSkills,
+        interests: commonInterests,
+        experience: isStudent ? 'Beginner' : 'Intermediate',
         isProfileComplete: false,
-        availability: '',
-        timezone: '',
-        preferredRoles: [],
-        communicationStyle: '',
-        hackathonPreference: '',
+        availability: isStudent ? 'Evenings' : 'Weekends',
+        timezone: 'UTC',
+        preferredRoles: isStudent ? ['Frontend Developer', 'Backend Developer'] : ['Full Stack Developer', 'Tech Lead'],
+        communicationStyle: 'Slack',
+        hackathonPreference: 'Virtual',
         remoteWork: true,
-        workStyle: [],
-        personalityTags: [],
-        codingHours: '',
-        collaborationStyle: '',
-        projectPace: '',
+        workStyle: ['Agile/Scrum', 'Pair Programming'],
+        personalityTags: isStudent ? ['🌅 Early Bird', '☕ Coffee Addict', '📚 Bookworm'] : ['🦉 Night Owl', '🤖 Tech Geek', '🎯 Goal Crusher'],
+        codingHours: isStudent ? '🌆 Evening (5-9 PM)' : '🦉 Night Owl (9 PM-1 AM)',
+        collaborationStyle: '🤝 Highly Collaborative',
+        projectPace: '⚡ Quick Sprints',
         maxDistance: 50,
-        profileStrength: 20,
+        profileStrength: 65,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         lastActive: serverTimestamp()

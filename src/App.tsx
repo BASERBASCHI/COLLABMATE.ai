@@ -9,6 +9,7 @@ import { Dashboard } from './components/dashboard/Dashboard';
 import { Profile } from './components/profile/Profile';
 import { Chat } from './components/chat/Chat';
 import { ProfileCompletion } from './components/profile/ProfileCompletion';
+import { AskGemini } from './components/gemini/AskGemini';
 import { ViewType } from './types';
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
   } | null>(null);
 
   const [showProfileCompletion, setShowProfileCompletion] = useState(false);
+  const [showAskGemini, setShowAskGemini] = useState(false);
 
   // Show profile completion modal for incomplete profiles
   React.useEffect(() => {
@@ -83,6 +85,9 @@ function App() {
     setSelectedChatPartner(null);
   };
 
+  const handleAskGemini = () => {
+    setShowAskGemini(true);
+  };
   const handleRefresh = () => {
     // Show loading state briefly
     const refreshButton = document.querySelector('#refresh-btn');
@@ -150,7 +155,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <Navigation user={user} onLogout={logout} />
+      <Navigation user={user} onLogout={logout} onAskGemini={handleAskGemini} />
       
       <div className="container mx-auto px-4 py-6">
         <div className="flex flex-col lg:flex-row gap-6">
@@ -159,6 +164,7 @@ function App() {
             onFindTeammates={handleFindTeammates}
             onCreateTeam={handleCreateTeam}
             onRecommendedProjects={handleRecommendedProjects}
+            onAskGemini={handleAskGemini}
           />
           
           <div className="w-full lg:w-3/4">
@@ -168,6 +174,7 @@ function App() {
                 onViewProfile={handleViewProfile}
                 onSendMessage={handleSendMessage}
                 onRefresh={handleRefresh}
+                onAskGemini={handleAskGemini}
               />
             )}
             
@@ -197,6 +204,12 @@ function App() {
             onClose={() => setShowProfileCompletion(false)}
           />
         )}
+        
+        <AskGemini
+          isOpen={showAskGemini}
+          onClose={() => setShowAskGemini(false)}
+          context={`User: ${user.name}, Skills: ${user.skills.join(', ')}, Interests: ${user.interests.join(', ')}`}
+        />
       </div>
     </div>
   );

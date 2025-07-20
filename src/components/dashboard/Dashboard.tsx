@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { Users, MessageCircle, Lightbulb, RefreshCw, ChevronDown } from 'lucide-react';
+import { Users, MessageCircle, Lightbulb, RefreshCw, ChevronDown, Sparkles } from 'lucide-react';
 import { User, ProjectSuggestion as ProjectSuggestionType } from '../../types';
 import { StatsCard } from './StatsCard';
 import { MatchCard } from './MatchCard';
@@ -13,13 +13,15 @@ interface DashboardProps {
   onViewProfile: () => void;
   onSendMessage: () => void;
   onRefresh: () => void;
+  onAskGemini: () => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
   user,
   onViewProfile,
   onSendMessage,
-  onRefresh
+  onRefresh,
+  onAskGemini
 }) => {
   const { matches, loading: matchesLoading, generateMatches } = useFirebaseMatches(user.id);
   const [projectSuggestions, setProjectSuggestions] = useState<ProjectSuggestionType[]>([]);
@@ -83,13 +85,22 @@ export const Dashboard: React.FC<DashboardProps> = ({
       <div className="bg-white rounded-lg shadow-md p-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold text-gray-800">Your Dashboard</h2>
-          <button
-            onClick={handleRefresh}
-            className="flex items-center space-x-2 text-indigo-600 hover:text-indigo-800 transition-colors"
-          >
-            <RefreshCw className="h-5 w-5" />
-            <span>Refresh</span>
-          </button>
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={onAskGemini}
+              className="flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white px-4 py-2 rounded-lg transition-colors"
+            >
+              <Sparkles className="h-4 w-4" />
+              <span>Ask Gemini</span>
+            </button>
+            <button
+              onClick={handleRefresh}
+              className="flex items-center space-x-2 text-indigo-600 hover:text-indigo-800 transition-colors"
+            >
+              <RefreshCw className="h-5 w-5" />
+              <span>Refresh</span>
+            </button>
+          </div>
         </div>
 
         {/* Stats Cards */}

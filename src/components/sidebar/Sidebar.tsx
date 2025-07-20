@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, Plus, FileText, Activity, MapPin, TrendingUp } from 'lucide-react';
+import { Users, Plus, FileText, Activity, MapPin, TrendingUp, Sparkles } from 'lucide-react';
 import { User } from '../../types';
 
 interface SidebarProps {
@@ -7,13 +7,15 @@ interface SidebarProps {
   onFindTeammates: () => void;
   onCreateTeam: () => void;
   onRecommendedProjects: () => void;
+  onAskGemini: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   user,
   onFindTeammates,
   onCreateTeam,
-  onRecommendedProjects
+  onRecommendedProjects,
+  onAskGemini
 }) => {
   return (
     <div className="w-full lg:w-1/4 flex flex-col gap-4">
@@ -86,6 +88,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="bg-white rounded-lg shadow-md p-6">
         <h3 className="font-bold text-gray-800 mb-4">Quick Actions</h3>
         <div className="space-y-3">
+          <button
+            onClick={onAskGemini}
+            className="w-full flex items-center space-x-3 bg-gradient-to-r from-purple-100 to-indigo-100 hover:from-purple-200 hover:to-indigo-200 text-purple-700 rounded-lg px-4 py-3 transition-colors"
+          >
+            <Sparkles className="h-5 w-5" />
+            <span>Ask Gemini AI</span>
+          </button>
+          
           <button
             onClick={onFindTeammates}
             className="w-full flex items-center space-x-3 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded-lg px-4 py-3 transition-colors"
