@@ -1,110 +1,60 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
 
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Firebase configuration - Replace with your actual Firebase config
 const firebaseConfig = {
-  apiKey: "AIzaSyB6YwCfTn79hYO0iEBGbKU-TqvABUQiE_U",
-  authDomain: "collabmate-1b221.firebaseapp.com",
-  projectId: "collabmate-1b221",
-  storageBucket: "collabmate-1b221.firebasestorage.app",
-  messagingSenderId: "420991959380",
-  appId: "1:420991959380:web:4fe9203020b5d1953fc8c1",
-  measurementId: "G-SSNSGGCZVM"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "demo-api-key",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "collabmate-demo.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "collabmate-demo",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "collabmate-demo.appspot.com",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "123456789",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:123456789:web:abcdef123456"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Firebase services
+// Initialize Firebase Authentication and get a reference to the service
 export const auth = getAuth(app);
+
+// Initialize Cloud Firestore and get a reference to the service
 export const db = getFirestore(app);
-export const storage = getStorage(app);
 
-export default app;
-
-// Firestore collection names
+// Collection references
 export const COLLECTIONS = {
   USERS: 'users',
-  PROJECTS: 'projects',
   MATCHES: 'matches',
   MESSAGES: 'messages',
-  TEAMS: 'teams'
+  PROJECTS: 'projects'
 };
 
-// User profile interface for Firestore
+// Firebase types
 export interface FirebaseUser {
   uid: string;
-  email: string;
-  displayName: string;
-  photoURL?: string;
-  title: string;
-  bio: string;
-  skills: string[];
-  interests: string[];
-  experience: string;
-  github?: string;
-  linkedin?: string;
-  portfolio?: string;
-  location?: {
-    city: string;
-    country: string;
-    coordinates?: {
-      lat: number;
-      lng: number;
-    };
-  };
-  isProfileComplete: boolean;
-  availability: string;
-  timezone: string;
-  preferredRoles: string[];
-  communicationStyle: string;
-  hackathonPreference: string;
-  remoteWork: boolean;
-  maxDistance?: number;
-  workStyle: string[];
-  personalityTags: string[];
-  codingHours: string;
-  collaborationStyle: string;
-  projectPace: string;
-  workStyle: string[];
-  personalityTags: string[];
-  codingHours: string;
-  collaborationStyle: string;
-  projectPace: string;
-  profileStrength: number;
-  createdAt: any;
-  updatedAt: any;
-  lastActive: any;
-}
-
-export interface FirebaseProject {
-  id: string;
-  userId: string;
-  title: string;
-  description: string;
-  technologies: string[];
-  status: 'completed' | 'in-progress' | 'planned';
-  createdAt: any;
-  updatedAt: any;
-}
-
-export interface FirebaseMatch {
-  id: string;
-  userId: string;
-  matchedUserId: string;
-  compatibilityScore: number;
-  reason: string;
-  commonSkills: string[];
-  createdAt: any;
+  email: string | null;
+  displayName: string | null;
+  photoURL: string | null;
+  isProfileComplete?: boolean;
+  profileStrength?: number;
 }
 
 export interface FirebaseMessage {
   id: string;
   senderId: string;
   receiverId: string;
-  message: string;
-  messageType: 'user' | 'ai-suggestion';
-  createdAt: any;
+  content: string;
+  timestamp: Date;
+  type: 'text' | 'suggestion';
 }
+
+export interface FirebaseMatch {
+  id: string;
+  userId: string;
+  matchedUserId: string;
+  score: number;
+  status: 'pending' | 'accepted' | 'declined';
+  timestamp: Date;
+}
+
+export default app;

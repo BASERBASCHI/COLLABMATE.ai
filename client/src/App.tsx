@@ -7,9 +7,9 @@ import { queryClient } from './lib/queryClient';
 import { ToastProvider } from './components/ui/toast';
 
 function AppContent() {
-  const { user, isLoading, isAuthenticated } = useAuth();
+  const { user, loading } = useAuth();
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -20,7 +20,7 @@ function AppContent() {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!user) {
     return <Landing />;
   }
 

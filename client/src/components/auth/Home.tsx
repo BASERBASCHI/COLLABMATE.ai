@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth';
 import { Navigation } from '../navigation/Navigation';
 import { Sidebar } from '../sidebar/Sidebar';
 import { Dashboard } from '../dashboard/Dashboard';
@@ -23,9 +23,8 @@ export const Home = () => {
 
   // Show profile completion modal for incomplete profiles
   React.useEffect(() => {
-    if (user && (!user.isProfileComplete || user.profileStrength < 60)) {
-      setShowProfileCompletion(true);
-    }
+    // For now, skip profile completion check as we're using Firebase auth
+    // This can be implemented later when user profiles are stored in Firestore
   }, [user]);
 
   const handleViewProfile = () => {
@@ -51,8 +50,14 @@ export const Home = () => {
     setShowAskGemini(true);
   };
 
-  const handleLogout = () => {
-    window.location.href = '/api/logout';
+  const { logout } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
   };
 
   if (!user) {
