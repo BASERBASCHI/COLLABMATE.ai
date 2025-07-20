@@ -291,5 +291,6 @@ export const useFirebaseAuth = () => {
     signup,
     logout,
     updateUserProfile
+    updateUserProfile
   };
 };

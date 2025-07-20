@@ -22,7 +22,8 @@ function App() {
     login,
     loginWithGoogle,
     signup,
-    logout
+    logout,
+    updateUserProfile
   } = useFirebaseAuth();
 
   const [currentView, setCurrentView] = useState<ViewType>('dashboard');
@@ -104,16 +105,22 @@ function App() {
     }
 
     try {
+      console.log('Updating profile with:', updates);
       const result = await updateUserProfile(updates);
+      console.log('Update result:', result);
+      
       if (result?.success) {
         alert('✅ Profile updated successfully! Your profile strength is now higher.');
         setShowProfileCompletion(false);
       } else {
-        alert(`❌ Failed to update profile: ${result?.error || 'Unknown error'}. Please try again.`);
+        const errorMessage = result?.error || 'Unknown error occurred';
+        console.error('Profile update failed:', errorMessage);
+        alert(`❌ Failed to update profile: ${errorMessage}. Please try again.`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating profile:', error);
-      alert(`❌ Failed to update profile: ${error.message || 'Unknown error'}. Please try again.`);
+      const errorMessage = error?.message || error?.toString() || 'Unknown error occurred';
+      alert(`❌ Failed to update profile: ${errorMessage}. Please try again.`);
     }
   };
 
