@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
 import { MessageCircle, Send, Sparkles, X, Loader } from 'lucide-react';
-import { generateGeminiResponse } from '../../lib/gemini';
+import { apiRequest } from '../../lib/queryClient';
 
 interface AskGeminiProps {
-  isOpen: boolean;
   onClose: () => void;
   context?: string;
   placeholder?: string;
 }
 
 export const AskGemini: React.FC<AskGeminiProps> = ({ 
-  isOpen, 
   onClose, 
   context = '',
   placeholder = "Ask Gemini anything about collaboration, projects, or development..."
@@ -42,7 +40,11 @@ export const AskGemini: React.FC<AskGeminiProps> = ({
     setLoading(true);
 
     try {
-      const geminiResponse = await generateGeminiResponse(userMessage, context);
+      const result = await apiRequest('/api/gemini/ask', {
+        method: 'POST',
+        body: JSON.stringify({ question: userMessage, context }),
+      });
+      const geminiResponse = result.response;
       
       // Add Gemini response to history
       setConversationHistory(prev => [...prev, {
@@ -71,7 +73,7 @@ export const AskGemini: React.FC<AskGeminiProps> = ({
     setResponse('');
   };
 
-  if (!isOpen) return null;
+  // Component is always rendered when called
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">

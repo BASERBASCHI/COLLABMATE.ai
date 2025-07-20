@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import { MapPin, Github, Linkedin, Globe, Plus, X, CheckCircle } from 'lucide-react';
 import { User } from '../../types';
+import { apiRequest, queryClient } from '../../lib/queryClient';
 
 interface ProfileCompletionProps {
   user: User;
-  onUpdateProfile: (updates: any) => void;
   onClose: () => void;
 }
 
 export const ProfileCompletion: React.FC<ProfileCompletionProps> = ({
   user,
-  onUpdateProfile,
   onClose
 }) => {
   const [formData, setFormData] = useState({
