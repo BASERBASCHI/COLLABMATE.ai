@@ -2,14 +2,15 @@ import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
-// Firebase configuration - Replace with your actual Firebase config
+// Firebase configuration
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "demo-api-key",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "collabmate-demo.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "collabmate-demo",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "collabmate-demo.appspot.com",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "123456789",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:123456789:web:abcdef123456"
+  apiKey: "AIzaSyB6YwCfTn79hYO0iEBGbKU-TqvABUQiE_U",
+  authDomain: "collabmate-1b221.firebaseapp.com",
+  projectId: "collabmate-1b221",
+  storageBucket: "collabmate-1b221.firebasestorage.app",
+  messagingSenderId: "420991959380",
+  appId: "1:420991959380:web:4fe9203020b5d1953fc8c1",
+  measurementId: "G-SSNSGGCZVM"
 };
 
 // Initialize Firebase
