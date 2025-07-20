@@ -198,7 +198,11 @@ export const useFirebaseAuth = () => {
       await signInWithPopup(auth, provider);
     } catch (error: any) {
       console.error('Google login error:', error);
-      alert(`Google login failed: ${error.message}`);
+      if (error.code === 'auth/popup-blocked') {
+        alert('Pop-up blocked! Please allow pop-ups for this site in your browser settings and try again. Look for a pop-up blocker icon in your address bar.');
+      } else {
+        alert(`Google login failed: ${error.message}`);
+      }
     }
   };
 
