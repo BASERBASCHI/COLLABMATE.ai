@@ -136,15 +136,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Ask Gemini endpoint
-  app.post('/api/gemini/ask', isAuthenticated, async (req: any, res) => {
+  // Ask Gemini endpoint - Public for Firebase auth users
+  app.post('/api/gemini/ask', async (req: any, res) => {
     try {
       const { question, context } = req.body;
+      if (!question) {
+        return res.status(400).json({ error: "Question is required" });
+      }
+      
       const response = await generateGeminiResponse(question, context);
       res.json({ response });
     } catch (error) {
       console.error("Error with Gemini ask:", error);
-      res.status(500).json({ message: "Failed to get Gemini response" });
+      res.status(500).json({ error: "Failed to get AI response" });
     }
   });
 

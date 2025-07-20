@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { useUserProfile } from '../../hooks/useUserProfile';
 import { Navigation } from '../navigation/Navigation';
 import { Sidebar } from '../sidebar/Sidebar';
 import { Dashboard } from '../dashboard/Dashboard';
@@ -10,7 +11,8 @@ import { AskGemini } from '../gemini/AskGemini';
 import { ViewType } from '../../types';
 
 export const Home = () => {
-  const { user } = useAuth();
+  const { user: firebaseUser } = useAuth();
+  const { userProfile, loading: profileLoading, updateProfile } = useUserProfile();
   const [currentView, setCurrentView] = useState<ViewType>('dashboard');
   const [selectedChatPartner, setSelectedChatPartner] = useState<{
     id: string;
@@ -23,9 +25,10 @@ export const Home = () => {
 
   // Show profile completion modal for incomplete profiles
   React.useEffect(() => {
-    // For now, skip profile completion check as we're using Firebase auth
-    // This can be implemented later when user profiles are stored in Firestore
-  }, [user]);
+    if (userProfile && (!userProfile.isProfileComplete || userProfile.profileStrength < 60)) {
+      setShowProfileCompletion(true);
+    }
+  }, [userProfile]);
 
   const handleViewProfile = () => {
     setCurrentView('profile');
@@ -60,58 +63,57 @@ export const Home = () => {
     }
   };
 
-  if (!user) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
-
   return (
     <div className="flex h-screen bg-gray-50">
-      <Sidebar
-        currentView={currentView}
-        onViewChange={setCurrentView}
-        onViewProfile={handleViewProfile}
-        onAskGemini={handleAskGemini}
-        onLogout={handleLogout}
-        user={user}
-      />
-      
-      <div className="flex-1 flex flex-col">
-        <Navigation
-          user={user}
-          currentView={currentView}
-          onBackToDashboard={handleBackToDashboard}
-        />
-        
-        <main className="flex-1 overflow-hidden">
-          {currentView === 'dashboard' && (
-            <Dashboard
-              user={user}
-              onViewProfile={handleViewProfile}
-              onSendMessage={handleSendMessage}
-            />
-          )}
+      {userProfile && (
+        <>
+          <Sidebar
+            currentView={currentView}
+            onViewChange={setCurrentView}
+            onViewProfile={handleViewProfile}
+            onAskGemini={handleAskGemini}
+            onLogout={handleLogout}
+            user={userProfile}
+          />
           
-          {currentView === 'profile' && (
-            <Profile user={user} />
-          )}
-          
-          {currentView === 'chat' && selectedChatPartner && (
-            <Chat
-              user={user}
-              partner={selectedChatPartner}
+          <div className="flex-1 flex flex-col">
+            <Navigation
+              user={userProfile}
+              currentView={currentView}
               onBackToDashboard={handleBackToDashboard}
             />
-          )}
-        </main>
-      </div>
+            
+            <main className="flex-1 overflow-hidden">
+              {currentView === 'dashboard' && (
+                <Dashboard
+                  user={userProfile}
+                  onViewProfile={handleViewProfile}
+                  onSendMessage={handleSendMessage}
+                  onRefresh={() => window.location.reload()}
+                  onAskGemini={handleAskGemini}
+                />
+              )}
+              
+              {currentView === 'profile' && (
+                <Profile user={userProfile} onBack={handleBackToDashboard} />
+              )}
+              
+              {currentView === 'chat' && selectedChatPartner && (
+                <Chat
+                  user={userProfile}
+                  partner={selectedChatPartner}
+                  onBackToDashboard={handleBackToDashboard}
+                />
+              )}
+            </main>
+          </div>
+        </>
+      )}
 
-      {showProfileCompletion && (
+      {/* Modals */}
+      {showProfileCompletion && userProfile && (
         <ProfileCompletion
-          user={user}
+          user={userProfile}
           onClose={() => setShowProfileCompletion(false)}
         />
       )}

@@ -1,50 +1,61 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Phone, Video, MoreHorizontal, Send, Paperclip } from 'lucide-react';
-import { useFirebaseMessages } from '../../hooks/useFirebaseMessages';
+import { ArrowLeft, Phone, Video, MoreHorizontal, Send, Paperclip, Sparkles } from 'lucide-react';
+import { useGeminiChat } from '../../hooks/useGeminiChat';
+import { User } from '../../types';
 
 interface ChatProps {
-  userId: string;
-  partnerId: string;
-  partnerName: string;
-  partnerAvatar: string;
-  onBack: () => void;
+  user: User;
+  partner: {
+    id: string;
+    name: string;
+    avatar: string;
+  };
+  onBackToDashboard: () => void;
 }
 
 export const Chat: React.FC<ChatProps> = ({ 
-  userId, 
-  partnerId, 
-  partnerName, 
-  partnerAvatar, 
-  onBack 
+  user,
+  partner,
+  onBackToDashboard 
 }) => {
   const [message, setMessage] = useState('');
-  const { messages, loading, sendMessage: sendMsg } = useFirebaseMessages(userId, partnerId);
+  const { messages, loading, sendMessage, clearMessages } = useGeminiChat();
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (message.trim()) {
-      sendMsg(message);
+    if (message.trim() && !loading) {
+      const userMessage = message.trim();
       setMessage('');
+      
+      try {
+        await sendMessage(userMessage, `You are chatting with a developer named ${partner.name}. Help facilitate their collaboration by providing relevant coding advice, project suggestions, and team communication tips.`);
+      } catch (error) {
+        console.error('Error sending message:', error);
+      }
     }
   };
 
   const handlePhoneCall = () => {
-    alert(`📞 Starting voice call with ${partnerName}...\n\nThis would initiate a WebRTC voice call.`);
+    alert(`📞 Starting voice call with ${partner.name}...\n\nThis would initiate a WebRTC voice call.`);
   };
 
   const handleVideoCall = () => {
-    alert(`📹 Starting video call with ${partnerName}...\n\nThis would open a video conference room.`);
+    alert(`📹 Starting video call with ${partner.name}...\n\nThis would open a video conference room.`);
   };
 
   const handleMoreOptions = () => {
     alert('⚙️ Chat Options\n\n• Mute notifications\n• Share files\n• Schedule meeting\n• View shared projects\n• Block user');
+  };
+
+  const handleClearChat = () => {
+    clearMessages();
   };
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
       {/* Chat Header */}
       <div className="border-b border-gray-200 p-4 flex items-center">
         <button
-          onClick={onBack}
+          onClick={onBackToDashboard}
           className="flex items-center space-x-2 text-indigo-600 hover:text-indigo-800 transition-colors mr-4"
         >
           <ArrowLeft className="h-5 w-5" />
@@ -53,31 +64,26 @@ export const Chat: React.FC<ChatProps> = ({
         
         <div className="flex items-center flex-1">
           <img
-            src={partnerAvatar}
-            alt={partnerName}
+            src={partner.avatar}
+            alt={partner.name}
             className="w-10 h-10 rounded-full object-cover mr-3"
           />
           <div>
-            <h3 className="font-bold text-gray-800">{partnerName}</h3>
+            <h3 className="font-bold text-gray-800">{partner.name}</h3>
             <p className="text-xs text-gray-500 flex items-center">
               <span className="w-2 h-2 bg-green-500 rounded-full mr-1"></span>
-              Online now
+              Online now • AI Assistant
             </p>
           </div>
         </div>
         
         <div className="flex space-x-2">
           <button 
-            onClick={handlePhoneCall}
+            onClick={handleClearChat}
             className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+            title="Clear chat"
           >
-            <Phone className="h-5 w-5 text-gray-600" />
-          </button>
-          <button 
-            onClick={handleVideoCall}
-            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-          >
-            <Video className="h-5 w-5 text-gray-600" />
+            <Sparkles className="h-5 w-5 text-purple-600" />
           </button>
           <button 
             onClick={handleMoreOptions}
@@ -88,79 +94,62 @@ export const Chat: React.FC<ChatProps> = ({
         </div>
       </div>
 
-      {/* Chat Messages */}
-      <div className="p-4 h-96 overflow-y-auto space-y-4">
-        {loading ? (
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
-            <p className="text-gray-600 mt-2">Loading messages...</p>
+      {/* Messages Area */}
+      <div className="flex-1 overflow-y-auto p-4">
+        {messages.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            <div className="bg-blue-50 rounded-lg p-6 mb-4">
+              <Sparkles className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+              <p className="font-medium text-gray-700">AI-Powered Chat Assistant</p>
+              <p className="text-sm mt-1">Ask me about coding, project ideas, or collaboration tips!</p>
+            </div>
           </div>
         ) : (
-          messages.map((msg) => (
-          <div key={msg.id}>
-            {msg.type === 'ai-suggestion' ? (
-              <div className="flex justify-center">
-                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 max-w-md text-center">
-                  <div className="flex items-center justify-center mb-2">
-                    <img
-                      src={msg.senderAvatar}
-                      alt="AI"
-                      className="w-6 h-6 rounded-full mr-2"
-                    />
-                    <span className="text-sm font-medium text-purple-800">Gemini AI Suggestion</span>
-                  </div>
-                  <p className="text-sm text-gray-700">{msg.message}</p>
+          <div className="space-y-4">
+            {messages.map((msg) => (
+              <div key={msg.id} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                  msg.type === 'user'
+                    ? 'bg-indigo-600 text-white' 
+                    : 'bg-gray-200 text-gray-800'
+                }`}>
+                  <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                  <p className="text-xs mt-1 opacity-75">
+                    {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </p>
                 </div>
               </div>
-            ) : msg.senderId === userId ? (
-              <div className="flex justify-end">
-                <div className="flex flex-col items-end">
-                  <div className="bg-indigo-100 rounded-lg p-3 max-w-xs md:max-w-md">
-                    <p className="text-gray-800">{msg.message}</p>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">You • {msg.timestamp}</p>
-                </div>
-              </div>
-            ) : (
-              <div className="flex items-start">
-                <img
-                  src={msg.senderAvatar}
-                  alt={msg.senderName}
-                  className="w-8 h-8 rounded-full object-cover mr-3"
-                />
-                <div>
-                  <div className="bg-gray-100 rounded-lg p-3 max-w-xs md:max-w-md">
-                    <p className="text-gray-800">{msg.message}</p>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">{msg.senderName} • {msg.timestamp}</p>
-                </div>
-              </div>
-            )}
+            ))}
           </div>
-          ))
+        )}
+        
+        {loading && (
+          <div className="flex justify-start mt-4">
+            <div className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg">
+              <div className="flex items-center space-x-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                <span className="text-sm">AI is typing...</span>
+              </div>
+            </div>
+          </div>
         )}
       </div>
 
       {/* Message Input */}
       <div className="border-t border-gray-200 p-4">
         <form onSubmit={handleSendMessage} className="flex items-center">
-          <button
-            type="button"
-            onClick={() => alert('📎 File attachment feature would open here')}
-            className="p-2 rounded-full hover:bg-gray-100 transition-colors mr-2"
-          >
-            <Paperclip className="h-5 w-5 text-gray-600" />
-          </button>
           <input
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder="Type a message..."
-            className="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            placeholder="Ask me anything about coding or collaboration..."
+            disabled={loading}
+            className="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:opacity-50"
           />
           <button
             type="submit"
-            className="ml-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full p-2 transition-colors"
+            disabled={loading || !message.trim()}
+            className="ml-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full p-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Send className="h-5 w-5" />
           </button>
