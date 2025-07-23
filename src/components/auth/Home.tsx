@@ -1,8 +1,1 @@
-@@ .. @@
-   // Show profile completion modal for incomplete profiles
-   React.useEffect(() => {
--    if (userProfile && (!userProfile.isProfileComplete || userProfile.profileStrength < 60)) {
-+    if (userProfile && (!userProfile.isProfileComplete || userProfile.profileStrength < 80)) {
-       setShowProfileCompletion(true);
-     }
-   }, [userProfile]);
+{"code":"rate-limited","message":"You have hit the rate limit. Please upgrade to keep chatting.","providerLimitHit":false,"isRetryable":true}
